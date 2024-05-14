@@ -1,0 +1,66 @@
+<h1>{{title}} <span class="badge bg-primary">{{getTodoCount()}}</span></h1>
+
+<div *ngIf="!selected">
+
+<div *ngIf="!selected" >
+    <form class="row">
+        <input class="form-control col" type="text" name="Task" [(ngModel)]="newTodo.task">
+        <button class="btn bg-primary col" (click)="addTodo(newTodo)">Add New Task</button>
+    </form>
+</div>
+
+
+<table class="table table-striped table-hover ">
+    <thead class="table-dark">
+        <tr>
+            <th>Task</th>
+            <th>Mark</th>
+            <th>Completed</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let todo of todos"  >
+            
+            <td (click)="displayTodo(todo)">{{todo.task}}</td>
+            <td><input type="checkbox" name="completed" id="" [(ngModel)]="todo.completed"></td>
+            <td (click)="displayTodo(todo)">{{todo.completed}}</td>
+            
+        </tr>
+    </tbody>
+</table>
+
+</div>
+
+
+<div *ngIf="selected && !editTodo">
+    <h2>{{selected.id}}</h2>
+    <p>{{selected.task}}</p>
+    <p>Description: {{selected.description}}</p>
+    <p>Completed: {{selected.completed}}</p>
+    <button class="btn bg-primary" (click)="displayTable()">Display Table</button>
+    <button class="btn bg-primary" (click)="setEditTodo()">Edit</button>
+</div>
+
+<div *ngIf="editTodo">
+
+<form name="editForm">
+    <div class="form-floating">
+        <input class="form-control" type="text" name="task" id="1" placeholder="" [(ngModel)]="editTodo.task">
+        <label for="i">Task</label>
+    </div>
+    <div class="form-floating">
+         <input class="form-control" placeholder="" id="2" type="text" name="description" [(ngModel)]="editTodo.description">
+         <label for="2">Description</label>
+    </div>
+    <div>
+         <input class="form-check-input" id="3" type="checkbox" name="completed" [(ngModel)]="editTodo.completed">
+         <label class="form-check-label" for="3">Completed</label>
+    </div>
+
+    <button class="btn bg-primary" (click)="editTodo = null">Cancel</button>
+    <button class="btn bg-success" (click)="updateTodo(editTodo)">Save</button>
+</form>
+
+</div>
+
+
