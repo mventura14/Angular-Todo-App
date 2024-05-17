@@ -22,9 +22,9 @@
         <tr *ngFor="let todo of todos"  >
             
             <td (click)="displayTodo(todo)">{{todo.task}}</td>
-            <td><input type="checkbox" name="completed" id="" [(ngModel)]="todo.completed"></td>
+            <td><input type="checkbox" name="completed" id="" [disabled]="todo.completed" [(ngModel)]="todo.completed" (change)="updateTodo(todo)"></td>
             <td (click)="displayTodo(todo)">{{todo.completed}}</td>
-            
+            <td><button class="btn btn-danger" (click)="deleteTodo(todo.id)">X</button></td>
         </tr>
     </tbody>
 </table>

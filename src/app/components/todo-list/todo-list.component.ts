@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { Todo } from '../../models/todo';
+import { Todo } from './../../models/todo';
+import { TodoService } from './../../services/todo.service';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -13,19 +14,28 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './todo-list.component.html',
   styleUrl: './todo-list.component.css'
 })
-export class TodoListComponent {
+export class TodoListComponent implements OnInit {
+
+  //--------------------------------------------
   title: String = 'ngTodo';
 
   selected: Todo | null = null;
 
   newTodo: Todo = new Todo();
+
   editTodo: Todo | null = null;
 
-  todos: Todo[] = [
-    new Todo(1, 'Go round mums', '', false),
-    new Todo(2, 'Get Liz back', '', false),
-    new Todo(3, 'Sort life out', '', false)
-  ];
+  todos: Todo[] = [];
+
+  //--------------------------------------------
+
+  constructor(private todoService: TodoService) { }
+
+  ngOnInit(): void {
+    this.reload()
+  }
+
+  //--------------------------------------------
 
   getTodoCount(): Number {
     return this.todos.length;
@@ -40,26 +50,52 @@ export class TodoListComponent {
     this.selected = null;
   }
 
-  addTodo(todo : Todo){
-      todo.id = this.generateId();
-      this.todos.push(todo)
+  addTodo(todo: Todo) {
+    this.todoService.create(todo).subscribe({
+      next: (todo) => {
+        this.reload();
+        this.newTodo = new Todo();
+      },
+      error: () => { }
+    })
   }
 
-  generateId() {
-    return this.todos[this.todos.length - 1].id + 1;
-  }
-
-  setEditTodo(){
+  setEditTodo() {
     this.editTodo = Object.assign({}, this.selected);
   }
 
-  updateTodo(todo : Todo){
-    for(let i = 0; i < this.todos.length; i++){
-      if(this.todos[i].id === todo.id){
-        this.todos[i] = Object.assign({}, todo);
-        this.selected = this.todos[i]
+  updateTodo(todo: Todo) {
+    this.todoService.update(todo, todo.id).subscribe({
+      next: (todo) => {
+        this.reload();
+        this.selected = null;
+        this.editTodo = null;
+      },
+      error: () => { }
+    });
+
+
+  }
+
+  deleteTodo(id: number) {
+    this.todoService.destroy(id).subscribe({
+      next: () => {
+        this.reload();
+      },
+      error: () => { }
+    });
+    this.reload();;
+  }
+
+  reload() {
+    this.todoService.index().subscribe({
+      next: (dbTodos: Todo[]) => {
+        console.log(dbTodos)
+        this.todos = dbTodos
+      },
+      error: (err) => {
+        console.log("something went wrong with reload()")
       }
-    }
-   this.editTodo = null;
+    })
   }
 }
